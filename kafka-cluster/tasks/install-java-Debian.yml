@@ -1,0 +1,26 @@
+---
+
+- name: Install java 8 
+  apt_repository: 
+     repo: 'ppa:openjdk-r/ppa' 
+     update_cache: yes
+  ignore_errors: yes
+
+- apt: name=openjdk-8-jdk state=latest
+  ignore_errors: yes 
+  
+- name: Set JAVA Home ENV 
+  blockinfile: 
+     dest: ~/.bashrc
+     state: present
+     regexp: 'export JAVA_HOME='
+     block: | 
+       # JAVA HOME ENV 
+       export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+       export PATH=$PATH:$JAVA_HOME/bin
+  ignore_errors: yes
+
+- name: source .bashrc
+  shell: source ~/.bashrc && exec bash
+  ignore_errors: yes
+ 

@@ -1,0 +1,25 @@
+---
+
+- name: Install java 8 
+  yum: name={{ item }} state=latest update_cache=yes
+  with_items: 
+     - java-1.8.0-openjdk.x86_64
+     - java-1.8.0-openjdk-devel.x86_64
+
+- name: Set JAVA Home ENV
+  become: false
+  blockinfile:
+     dest: ~/.bashrc
+     state: present
+     regexp: 'export JAVA_HOME='
+     block: |
+       
+       # JAVA HOME ENV
+       export JAVA_HOME=/usr/lib/jvm/java-1.8.0
+       export PATH=$PATH:$JAVA_HOME/bin
+       
+
+- name: source .bashrc
+  become: false
+  shell: source ~/.bashrc && exec bash
+

@@ -1,0 +1,23 @@
+---
+# defaults file for ansible-kafka_cluster
+#
+kafka_dir: /opt/kafka_2.11-1.0.0
+zookeeperPort: 2181
+zookeeper_myid: /opt/kafka_2.11-1.0.0/zookeeper/myid
+
+## zookeeper.properties
+#
+dataDir: /opt/kafka_2.11-1.0.0/zookeeper 
+clientPort: 2181
+maxClientCnxns: 200
+tickTime: 2000
+#server.1: x.x.x.x:2888:3888
+#server.2: y.y.y.y:2888:3888
+#server.3: z.z.z.z:2888:3888
+initLimit: 20
+syncLimit: 10
+
+## server.properties
+#
+logsDir: /opt/kafka_2.11-1.0.0/logs 
+#zookeeper.connect: x.x.x.x:2181,y.y.y.y:2181,z.z.z.z:2181

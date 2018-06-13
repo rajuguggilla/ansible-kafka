@@ -1,0 +1,8 @@
+---
+# tasks file for ansible-kafka_cluster
+#
+#
+- include: "install-java-{{ ansible_os_family }}.yml"
+  
+- include: "kafka-setup.yml"
+

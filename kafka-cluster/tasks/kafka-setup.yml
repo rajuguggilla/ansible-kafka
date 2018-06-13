@@ -1,0 +1,81 @@
+---
+
+- name: Downloading kafka from apache.org 
+  get_url: 
+    url: http://apache.org/dist/kafka/1.0.0/kafka_2.11-1.0.0.tgz
+    dest: /opt/
+
+- name: Unarchive the downloaded kafka tar ball
+  unarchive: 
+    src: /opt/kafka_2.11-1.0.0.tgz
+    dest: /opt/
+    remote_src: yes
+
+- name: create tmp, zookeeper and logs directories in kafka directory
+  file: 
+    state: directory
+    path: "{{ item }}"
+  with_items:
+    - /opt/kafka_2.11-1.0.0/tmp
+    - /opt/kafka_2.11-1.0.0/zookeeper
+    - /opt/kafka_2.11-1.0.0/logs
+
+- name: create myid file for zookeeper in kafka directory
+  file: 
+    state: touch 
+    path: "{{ zookeeper_myid }}"
+
+- name: Adding value to myid file in all nodes
+  shell: echo '1' > "{{ zookeeper_myid }}"
+  when: ansible_default_ipv4.address in server1
+
+#- name: Adding value to myid file in server2
+- shell: echo '2' > "{{ zookeeper_myid }}"
+  when: ansible_default_ipv4.address in server2
+
+#- name: Adding value to myid file in server3
+- shell: echo '3' > "{{ zookeeper_myid }}"
+  when: ansible_default_ipv4.address in server3
+
+- name: Updating zookeeper properties in all nodes
+  template: 
+    src: "zookeeper.properties.j2"
+    dest: "{{ kafka_dir }}/config/zookeeper.properties"  
+
+- name: Updating server.properties in node1
+  replace: 
+    dest: "{{ kafka_dir }}/config/server.properties"
+    regexp: "^broker.id=[0-9]$"
+    replace: "broker.id=1"
+  when: ansible_default_ipv4.address in server1
+
+- name: Updating server.properties in node2
+  replace:
+    dest: "{{ kafka_dir }}/config/server.properties"
+    regexp: "^broker.id=[0-9]$"
+    replace: "broker.id=2"
+  when: ansible_default_ipv4.address in server2
+
+- name: Updating server.properties in node3
+  replace:
+    dest: "{{ kafka_dir }}/config/server.properties"
+    regexp: "^broker.id=[0-9]$"
+    replace: "broker.id=3"
+  when: ansible_default_ipv4.address in server3
+ 
+- name: Updating zookeeper connection properties 
+  replace: 
+    dest: "{{ kafka_dir }}/config/server.properties"
+    regexp: "zookeeper.connect=localhost:2181"
+    replace: "zookeeper.connect={{ server1 }}:2181,{{ server2 }}:2181,{{ server3 }}:2181"
+
+- name: Starting the Zookeeper daemons on all the nodes
+  shell: bin/zookeeper-server-start.sh -daemon config/zookeeper.properties 
+  args: 
+    chdir: "{{ kafka_dir }}"
+ 
+- name: Starting the Kafka server daemons on all the nodes
+  shell: bin/kafka-server-start.sh -daemon config/server.properties
+  args:
+    chdir: "{{ kafka_dir }}"
+

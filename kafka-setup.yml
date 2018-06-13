@@ -1,0 +1,7 @@
+---
+
+- name: Deploying Apache Kafka Cluster
+  hosts: kafka-setup 
+  become: true
+  roles: 
+     - kafka_cluster 

@@ -1,0 +1,15 @@
+---
+# vars file for ansible-kafka_cluster
+#
+
+server1: 192.168.77.8 
+server2: 192.168.77.13
+server3: 192.168.77.11 
+
+server1.myid: 1
+server2.myid: 2
+server3.myid: 3
+
+#broker1.id: 1
+#broker2.id: 2
+#broker3.id: 3
